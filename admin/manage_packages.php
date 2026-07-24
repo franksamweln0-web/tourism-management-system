@@ -4,13 +4,13 @@ requireRole('admin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_package'])) {
-        $stmt = $pdo->prepare("INSERT INTO tour_packages (package_name, destination, duration_days, price, max_capacity, description, inclusions) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$_POST['package_name'], $_POST['destination'], $_POST['duration_days'], $_POST['price'], $_POST['max_capacity'], $_POST['description'], $_POST['inclusions']]);
+        $stmt = $pdo->prepare("INSERT INTO tour_packages (package_name, destination, duration_days, price, max_capacity, description, inclusions, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$_POST['package_name'], $_POST['destination'], $_POST['duration_days'], $_POST['price'], $_POST['max_capacity'], $_POST['description'], $_POST['inclusions'], $_POST['image_url']]);
         header('Location: manage_packages.php?msg=added');
         exit();
     } elseif (isset($_POST['edit_package'])) {
-        $stmt = $pdo->prepare("UPDATE tour_packages SET package_name=?, destination=?, duration_days=?, price=?, max_capacity=?, description=?, inclusions=?, status=? WHERE id=?");
-        $stmt->execute([$_POST['package_name'], $_POST['destination'], $_POST['duration_days'], $_POST['price'], $_POST['max_capacity'], $_POST['description'], $_POST['inclusions'], $_POST['status'], $_POST['id']]);
+        $stmt = $pdo->prepare("UPDATE tour_packages SET package_name=?, destination=?, duration_days=?, price=?, max_capacity=?, description=?, inclusions=?, image_url=?, status=? WHERE id=?");
+        $stmt->execute([$_POST['package_name'], $_POST['destination'], $_POST['duration_days'], $_POST['price'], $_POST['max_capacity'], $_POST['description'], $_POST['inclusions'], $_POST['image_url'], $_POST['status'], $_POST['id']]);
         header('Location: manage_packages.php?msg=updated');
         exit();
     } elseif (isset($_POST['delete_package'])) {
@@ -44,12 +44,20 @@ if (isset($_GET['edit'])) {
             <?php if ($msg === 'updated'): ?><div class="alert alert-success">Package updated successfully!</div><?php endif; ?>
             <?php if ($msg === 'deleted'): ?><div class="alert alert-success">Package deleted successfully!</div><?php endif; ?>
             <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead><tr><th>Name</th><th>Destination</th><th>Days</th><th>Price</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
+                <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead><tr><th>Image</th><th>Name</th><th>Destination</th><th>Days</th><th>Price</th><th>Capacity</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>
                         <?php foreach ($packages as $p): ?>
                         <tr>
-                            <td><?= htmlspecialchars($p['package_name']) ?></td>
+                            <td>
+                                <?php if ($p['image_url']): ?>
+                                <img src="<?= htmlspecialchars($p['image_url']) ?>" alt="<?= htmlspecialchars($p['package_name']) ?>" style="width:60px;height:40px;object-fit:cover;border-radius:8px;">
+                                <?php else: ?>
+                                <span class="text-muted">—</span>
+                                <?php endif; ?>
+                            </td>
+                            <td><strong><?= htmlspecialchars($p['package_name']) ?></strong></td>
                             <td><?= htmlspecialchars($p['destination']) ?></td>
                             <td><?= $p['duration_days'] ?></td>
                             <td>$<?= number_format($p['price'], 2) ?></td>
@@ -66,6 +74,7 @@ if (isset($_GET['edit'])) {
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </main>
     </div>
@@ -109,6 +118,11 @@ if (isset($_GET['edit'])) {
                     <div class="mb-3">
                         <label class="form-label">Inclusions</label>
                         <textarea name="inclusions" class="form-control" rows="2"><?= $editPkg['inclusions'] ?? '' ?></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" name="image_url" class="form-control" value="<?= htmlspecialchars($editPkg['image_url'] ?? '') ?>" placeholder="https://images.unsplash.com/photo-...">
+                        <small class="text-muted">Paste a high-quality image URL (Unsplash, Pexels, etc.)</small>
                     </div>
                     <?php if ($editPkg): ?>
                     <div class="mb-3">

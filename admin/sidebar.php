@@ -6,6 +6,7 @@
         <li class="nav-item"><a class="nav-link active" href="manage_packages.php"><i class="fas fa-suitcase"></i> Packages</a></li>
         <li class="nav-item"><a class="nav-link" href="manage_bookings.php"><i class="fas fa-book"></i> Bookings</a></li>
         <li class="nav-item"><a class="nav-link" href="manage_payments.php"><i class="fas fa-credit-card"></i> Payments</a></li>
+        <li class="nav-item"><a class="nav-link" href="payment_settings.php"><i class="fas fa-cog"></i> Payment Settings</a></li>
         <li class="nav-item"><a class="nav-link" href="manage_guides.php"><i class="fas fa-user-tie"></i> Guides</a></li>
         <li class="nav-item"><a class="nav-link" href="manage_accommodations.php"><i class="fas fa-hotel"></i> Accommodations</a></li>
         <li class="nav-item"><a class="nav-link" href="manage_itineraries.php"><i class="fas fa-map"></i> Itineraries</a></li>

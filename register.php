@@ -39,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($role === 'tourist') {
                     $stmt = $pdo->prepare("INSERT INTO tourists (user_id, full_name) VALUES (?, ?)");
                     $stmt->execute([$userId, $full_name]);
+                } elseif ($role === 'guide') {
+                    $stmt = $pdo->prepare("INSERT INTO guides (user_id, full_name) VALUES (?, ?)");
+                    $stmt->execute([$userId, $full_name]);
                 }
 
                 $pdo->commit();

@@ -58,3 +58,18 @@ function logNotification($userId, $type, $subject, $message) {
     $stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, subject, message, delivery_status) VALUES (?, ?, ?, ?, 'pending')");
     $stmt->execute([$userId, $type, $subject, $message]);
 }
+
+function getPackageImage($pkg) {
+    $defaults = [
+        'Safari Adventure' => 'https://images.unsplash.com/photo-1504006833117-8886a355efbf?q=80&w=800&h=500&fit=crop',
+        'Beach Holiday'    => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&h=500&fit=crop',
+        'Mountain Trek'      => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&h=500&fit=crop',
+        'Cultural Tour'      => 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=800&h=500&fit=crop',
+        'Lake Excursion'     => 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=800&h=500&fit=crop',
+        'Serengeti Safari'   => 'https://images.unsplash.com/photo-60XLoOgwkfA?q=80&w=800&h=500&fit=crop',
+        'Ngorongoro Crater'  => 'https://images.pexels.com/photos/30630770/pexels-photo-30630770.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&fit=crop',
+        'Lake Manyara'       => 'https://images.unsplash.com/photo-eCT0UCyFhjA?q=80&w=800&h=500&fit=crop',
+    ];
+    if (!empty($pkg['image_url'])) return $pkg['image_url'];
+    return $defaults[$pkg['package_name']] ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&h=500&fit=crop';
+}

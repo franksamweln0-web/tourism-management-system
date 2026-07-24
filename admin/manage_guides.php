@@ -9,6 +9,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_guide'])) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_guide'])) {
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
+    $email = trim($_POST['email']);
+    $fullName = trim($_POST['full_name']);
+
+    $check = $pdo->prepare("SELECT id FROM users WHERE username = ? OR email = ?");
+    $check->execute([$username, $email]);
+    if ($check->fetch()) {
+        $error = 'Username or email already exists.';
+    } else {
+        try {
+            $pdo->beginTransaction();
+            $hashed = password_hash($password, PASSWORD_BCRYPT);
+            $stmt = $pdo->prepare("INSERT INTO users (username, password, email, phone, role) VALUES (?, ?, ?, ?, 'guide')");
+            $stmt->execute([$username, $hashed, $email, $_POST['phone']]);
+            $userId = $pdo->lastInsertId();
+
+            $stmt = $pdo->prepare("INSERT INTO guides (user_id, full_name, languages, specialization, contact_number, availability) VALUES (?, ?, ?, ?, ?, 'available')");
+            $stmt->execute([$userId, $fullName, $_POST['languages'], $_POST['specialization'], $_POST['contact_number']]);
+
+            $pdo->commit();
+            header('Location: manage_guides.php?msg=added');
+            exit();
+        } catch (Exception $e) {
+            $pdo->rollBack();
+            $error = 'Failed: ' . $e->getMessage();
+        }
+    }
+}
+
 $guides = $pdo->query("SELECT g.*, u.username, u.email FROM guides g JOIN users u ON g.user_id = u.id ORDER BY g.created_at DESC")->fetchAll();
 $assignments = $pdo->query("SELECT ga.*, g.full_name as guide_name, b.booking_reference, p.package_name FROM guide_assignments ga JOIN guides g ON ga.guide_id = g.id JOIN bookings b ON ga.booking_id = b.id JOIN tour_packages p ON b.package_id = p.id ORDER BY ga.assignment_date DESC")->fetchAll();
 ?>
@@ -18,8 +49,11 @@ $assignments = $pdo->query("SELECT ga.*, g.full_name as guide_name, b.booking_re
     <div class="row">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar"><?php include 'sidebar.php'; ?></nav>
         <main class="col-md-10 ms-sm-auto px-4">
-            <div class="pt-3 pb-2 mb-3 border-bottom"><h1>Guide Management</h1></div>
-            <?php if (isset($_GET['msg'])): ?><div class="alert alert-success">Guide updated successfully!</div><?php endif; ?>
+            <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1>Guide Management</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addGuideModal">+ Add Guide</button>
+            </div>
+            <?php if (isset($_GET['msg'])): ?><div class="alert alert-success">Guide <?= htmlspecialchars($_GET['msg']) ?> successfully!</div><?php endif; ?>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead><tr><th>Name</th><th>Username</th><th>Languages</th><th>Specialization</th><th>Contact</th><th>Availability</th><th>Actions</th></tr></thead>
@@ -83,6 +117,33 @@ $assignments = $pdo->query("SELECT ga.*, g.full_name as guide_name, b.booking_re
                 </table>
             </div>
         </main>
+    </div>
+</div>
+<div class="modal fade" id="addGuideModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST">
+                <div class="modal-header"><h5>Add New Guide</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <?php if (isset($error)): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+                    <div class="row">
+                        <div class="col-md-6 mb-3"><label class="form-label">Full Name *</label><input type="text" name="full_name" class="form-control" required></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Email *</label><input type="email" name="email" class="form-control" required></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3"><label class="form-label">Username *</label><input type="text" name="username" class="form-control" required></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Password *</label><input type="password" name="password" class="form-control" required></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3"><label class="form-label">Phone</label><input type="text" name="phone" class="form-control"></div>
+                        <div class="col-md-4 mb-3"><label class="form-label">Languages</label><input type="text" name="languages" class="form-control" placeholder="e.g. English, Swahili"></div>
+                        <div class="col-md-4 mb-3"><label class="form-label">Specialization</label><input type="text" name="specialization" class="form-control" placeholder="e.g. Safari, Mountain"></div>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Contact Number</label><input type="text" name="contact_number" class="form-control"></div>
+                </div>
+                <div class="modal-footer"><button type="submit" name="add_guide" class="btn btn-primary">Add Guide</button></div>
+            </form>
+        </div>
     </div>
 </div>
 <?php include '../includes/footer.php'; ?>

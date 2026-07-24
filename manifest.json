@@ -1,0 +1,26 @@
+{
+  "name": "TMS - Tourism Management System",
+  "short_name": "TMS Safari",
+  "description": "Book and manage your wildlife safari adventures in Tanzania & Kenya",
+  "start_url": "/tourism_system/index.php",
+  "scope": "/tourism_system/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1b5e20",
+  "theme_color": "#2d6a4f",
+  "categories": ["travel", "tourism"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

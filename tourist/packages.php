@@ -81,9 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_package'])) {
         <?php endif; ?>
         <?php foreach ($packages as $pkg): ?>
         <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100 shadow-sm border-0" style="border-radius:16px; overflow:hidden;">
+                <?php $pkgImg = getPackageImage($pkg); ?>
+                <img src="<?= htmlspecialchars($pkgImg) ?>" alt="<?= htmlspecialchars($pkg['package_name']) ?>" style="width:100%; height:220px; object-fit:cover; display:block;" loading="lazy">
                 <div class="card-body">
-                    <h5 class="card-title"><?= htmlspecialchars($pkg['package_name']) ?></h5>
+                    <h5 class="card-title fw-bold"><?= htmlspecialchars($pkg['package_name']) ?></h5>
                     <h6 class="text-muted"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($pkg['destination']) ?></h6>
                     <p><span class="badge bg-info"><?= $pkg['duration_days'] ?> Days</span></p>
                     <p class="card-text"><?= htmlspecialchars(substr($pkg['description'], 0, 150)) ?>...</p>
@@ -92,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_package'])) {
                         <span class="fw-bold text-success fs-5">$<?= number_format($pkg['price'], 2) ?></span>
                         <span class="text-muted">Max <?= $pkg['max_capacity'] ?> pax</span>
                     </div>
-                    <button class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#bookModal<?= $pkg['id'] ?>">Book Now</button>
+                    <button class="btn btn-success w-100 mt-3 fw-bold" data-bs-toggle="modal" data-bs-target="#bookModal<?= $pkg['id'] ?>">Book Now</button>
                 </div>
             </div>
         </div>
