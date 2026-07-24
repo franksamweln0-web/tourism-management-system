@@ -6,7 +6,7 @@ $password = getenv('DB_PASS') ?: '5OgOVAiOQHY7HIo46PBP5JatmVsVE0TH';
 $port = getenv('DB_PORT') ?: '5432';
 
 try {
-    $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $username, $password);
+    $pdo = new PDO("pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
